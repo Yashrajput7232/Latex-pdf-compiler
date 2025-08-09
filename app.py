@@ -1,10 +1,13 @@
 from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS  # Add this
 import os
 import subprocess
 import tempfile
 from PyPDF2 import PdfReader
 
 app = Flask(__name__)
+CORS(app, origins="*")  # Allow all origins (or specify your frontend domain)
+# Example: CORS(app, origins=["https://your-frontend.com"])
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -22,11 +25,9 @@ def compile_latex():
             pdf_file_path = os.path.join(temp_dir, "document.pdf")
             log_file_path = os.path.join(temp_dir, "document.log")
 
-            # Write LaTeX code to file
             with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
                 tex_file.write(latex_code)
 
-            # Run pdflatex using TeX Live
             result = subprocess.run(
                 ["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "-output-directory", temp_dir, tex_file_path],
                 stdout=subprocess.PIPE,
@@ -34,7 +35,6 @@ def compile_latex():
             )
 
             if result.returncode != 0:
-                # Try to get log content
                 log_content = ""
                 if os.path.exists(log_file_path):
                     with open(log_file_path, 'r', encoding='utf-8', errors='ignore') as log_file:
