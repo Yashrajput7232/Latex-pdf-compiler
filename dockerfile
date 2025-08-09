@@ -7,18 +7,19 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && dpkg --configure -a
 
+
 # Set the working directory
 WORKDIR /app
 
 # Copy the application code
 COPY app.py /app/
 
-# Copy the requirements file and install Python dependencies
-COPY requirements.txt /app/
+# Install Python dependencies
 RUN pip install -r requirements.txt
 
 # Expose the application port
 EXPOSE 5000
 
-# Run the Flask application using Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# Run the Flask application
+CMD ["python", "app.py"]
+
